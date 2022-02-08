@@ -1,5 +1,6 @@
 # =============================
-# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen  
+# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen, Jude Tear
+
 # Group ID: 80
 # Date: 02/08/2022
 # =============================
