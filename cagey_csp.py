@@ -1,11 +1,11 @@
 # =============================
-# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen  
+# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen (Mimi) 
 # Group ID: 80
 # Date: 02/08/2022
 # =============================
 # CISC 352 - W22
 # cagey_csp.py
-# desc:
+# desc: 
 #
 
 #Look for #IMPLEMENT tags in this file.
