@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Kaitlyn Hung  
+# Group ID: 80
+# Date: 02/08/2022
 # =============================
 # CISC 352 - W22
 # cagey_csp.py
