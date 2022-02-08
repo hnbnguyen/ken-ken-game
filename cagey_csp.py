@@ -4,7 +4,7 @@
 # Group ID: 400 
 # Date: 02/08/2022
 # =============================
-# CISC 352 - W22 THIS IS A KAIT CHANGE
+# CISC 352 - W22
 # cagey_csp.py
 # desc: 
 #
