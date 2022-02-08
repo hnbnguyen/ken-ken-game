@@ -1,5 +1,5 @@
 # =============================
-# Student Names: Kaitlyn Hung  
+# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen  
 # Group ID: 80
 # Date: 02/08/2022
 # =============================
