@@ -12,6 +12,8 @@
 #Look for #IMPLEMENT tags in this file. These tags indicate what has
 #to be implemented to complete problem solution.
 
+from collections import deque
+
 '''This file will contain different constraint propagators to be used within
    bt_search.
 
@@ -74,7 +76,6 @@
 def prop_BT(csp, newVar=None):
     '''Do plain backtracking propagation. That is, do no
     propagation at all. Just check fully instantiated constraints'''
-
     if not newVar:
         return True, []
     for c in csp.get_cons_with_var(newVar):
@@ -91,13 +92,65 @@ def prop_FC(csp, newVar=None):
     '''Do forward checking. That is check constraints with
        only one uninstantiated variable. Remember to keep
        track of all pruned variable,value pairs and return '''
-    #IMPLEMENT
-    pass
+    # If newly instantiated variable is None, for forward checking, we get all contraints
+    if newVar == None:
+        cons = csp.get_all_cons()
+    # else we get only ones with newly instantiated variables
+    else:
+        cons= csp.get_cons_with_var(newVar)
+
+    pruned = [] # values to be pruned from the domain choice
+
+    for c in cons:
+        if c.get_n_unasgn() == 1: # there is only 1 unassigned variable left
+            unasgn_var = c.get_unasgn_vars().pop()
+
+            # try out the all the different option from existing domains
+            var_dom = unasgn_var.cur_domain()
+
+            for val in var_dom:
+                # assigning values from the domain to the unassigned variable
+                unasgn_var.assign(val)
+                variables = c.get_scope()
+                values = []
+
+                # checking with other variables to see if it makes a coherrent set
+                for var in variables:
+                    assigned_val = var.get_assigned_value()
+                    values.append(assigned_val)
+
+                if not c.check(values):
+                    pruned.append((unasgn_var, val))
+                    unasgn_var.prune_value(val)
+                unasgn_var.unassign()
+
+            if unasgn_var.cur_domain_size == 0: # there is no option left to try 
+                return False, pruned
+
+    return True, pruned
 
 
 def prop_GAC(csp, newVar=None):
     '''Do GAC propagation. If newVar is None we do initial GAC enforce
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
-    #IMPLEMENT
     pass
+    # pruned = []
+    # GAC_q = deque() # holding constraints for GAC enforce
+    
+    # # if newly instantiated variables is None, initializing GAC queue with all the contraints
+    # if newVar == None:
+    #     cons = csp.get_all_cons()
+    # else:
+    #     cons = csp.get_cons_with_var(newVar)
+    # # else we initialize the GAC queue with all the contraints with variable V
+
+    # for c in cons:
+    #     GAC_q.append(c)
+    
+    # while GAC_q: # keeping running until out of contraints in queue
+    #     constraint = GAC_q.popleft()
+
+    #     for var in constraint.get_scope():
+    #         for val in var.cur_domain()
+
