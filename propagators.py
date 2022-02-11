@@ -135,22 +135,41 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     pass
-    # pruned = []
-    # GAC_q = deque() # holding constraints for GAC enforce
+   
     
-    # # if newly instantiated variables is None, initializing GAC queue with all the contraints
-    # if newVar == None:
-    #     cons = csp.get_all_cons()
-    # else:
-    #     cons = csp.get_cons_with_var(newVar)
-    # # else we initialize the GAC queue with all the contraints with variable V
-
-    # for c in cons:
-    #     GAC_q.append(c)
+    # check all constraints
+    if newVar == None:
+        cons = csp.get_all_cons()
+    # if there is input variable, check constraints involving the input variable
+    else:
+        cons = csp.get_cons_with_var(newVar)
     
-    # while GAC_q: # keeping running until out of contraints in queue
-    #     constraint = GAC_q.popleft()
+    # keeping track of GAC queue and pruned
+    pruned = []
+    GAC_q = deque() # initialize queue
+    for c in cons:
+        GAC_q.append(c)
+    
+    # keeping running until no more element in queue left
+    while GAC_q: 
+        constraint = GAC_q.popleft()
+        # going through all unassigned VARIABLES within CONSTRAINTS scope 
+        # within those VARIABLES going through all VALUES it can be assigned to
+        for var in constraint.get_unasgn_vars():
+            for val in var.cur_domain():
+                # finding an assignment that satisfy the constraint
+                if not constraint.has_support(var, val): 
+                    # prune it 
+                    var.prune_value(val)
+                    pruned.append((var, val))
 
-    #     for var in constraint.get_scope():
-    #         for val in var.cur_domain()
+                    # check for domain wipeout
+                    if var.cur_domain_size() == 0:
+                        return False, pruned
+                    else: # queuing all the constraints that has the variable in scope
+                        for c in cons:
+                            if c not in GAC_q and var in c.get_scope():
+                                GAC_q.append(c)
+    return True, pruned
+
 

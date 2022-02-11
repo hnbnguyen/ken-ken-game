@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Kaitlyn Hung, Ngoc Bao Han Nguyen, Jude Tear
+# Group ID: 80
+# Date: Feb 10th, 2022
 # =============================
 # CISC 352 - W22
 # heuristics.py
@@ -29,10 +29,36 @@ var_ordering == a function with the following template
 
 def ord_dh(csp):
     ''' return variables according to the Degree Heuristic '''
-    # IMPLEMENT
-    pass
+    # since there is no test code for his function in test.py
+    # im still playing around with it at the moment
+    vars = csp.get_all_unasgn_vars()
+    max_degrees = -1
+    for v in vars:
+        degree = 0
+        cons = csp.get_cons_with_var(v)
+        for c in cons:
+            unasgn_c = c.get_n_unasgn()
+            if unasgn_c > 1:
+                degree += 1
+        if degree > max_degrees:
+            var_dh = v
+            max_degrees = degree
+    return var_dh
 
 def ord_mrv(csp):
     ''' return variable according to the Minimum Remaining Values heuristic '''
-    # IMPLEMENT
-    pass
+    # Idea behind MRV: assigned most constrainted variable first, one with fewest possible values
+    all_var = csp.get_all_unasgn_vars()
+    size_domain = []
+    # adding all the var and their domain size into the list
+    for var in all_var:
+        size_domain.append([var, var.cur_domain_size()])
+    # sort the list from the var with largest domain size to smaller
+    size_domain.sort(key = lambda x: -x[1])
+
+    # return the variable with smallest domain
+    return size_domain.pop()[0]
+    
+
+
+    
