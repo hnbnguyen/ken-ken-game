@@ -142,8 +142,7 @@ def binary_ne_grid(cagey_grid):
 
 
 def nary_ad_grid(cagey_grid):
-    ## IMPLEMENT
-    pass
+    
 
 def cagey_csp_model(cagey_grid):
     ##IMPLEMENT
