@@ -85,15 +85,64 @@ An example of a 3x3 puzzle would be defined as:
 '''
 
 from cspbase import *
+import itertools
 
 def binary_ne_grid(cagey_grid):
-    ##IMPLEMENT
-    pass
+    # getting the grid size
+    grid_size = cagey_grid[0]
+
+    # populating a domain list from 1 to n, this is all the values a variable square can have
+    value_domain = [ _ for _ in range(1, grid_size + 1)] # [1,2,3] ie
+
+    # initialize a variable matrix
+    variables = []
+    # variables = [[Variable("{},{}".format(r,c), domain= value_domain) for c in range(grid_size)] for r in range(grid_size)]
+    # going through all the colummns and rows to populate the var matrix
+    for r in range(1, grid_size + 1) :
+        cur_row = []
+        for c in range(1, grid_size + 1):
+            cur_var = Variable("Var({},{})".format(r,c), domain=value_domain)
+            cur_row.append(cur_var)
+        variables.append(cur_row)
+
+    # creating a Constraint matrix
+    constraints = []
+
+    # going through cell (by traversing through every rows and cols)
+    # when at that cell, traversing through all the next cell that is in the SAME row and col
+    # to update the contraints that they hold
+    sat_tuples = []
+    for i in itertools.product(value_domain, value_domain):
+        if i[0] != i[1]:
+            sat_tuples.append(i)
+    for r in range(grid_size):
+        for c in range(grid_size):
+            for n in range(c + 1, grid_size):
+                row_constraint = Constraint(name = "Cons(Var({},{}) and Var({},{}))".format(r + 1, c + 1, r + 1, n + 1), \
+                    scope= [variables[r][c], variables[r][n]])
+                row_constraint.add_satisfying_tuples(sat_tuples)
+                
+                col_constraint = Constraint(name = "Cons(Var({},{}) and Var({},{}))".format(r + 1, c + 1, n + 1, r + 1), \
+                    scope = [variables[c][r], variables[n][r]])
+                col_constraint.add_satisfying_tuples(sat_tuples)
+
+                constraints.append(row_constraint)
+                constraints.append(col_constraint)
+
+    variables_csp = []
+
+    for i in range(grid_size):
+        for j in range(grid_size):
+            variables_csp.append(variables[i][j])
+    csp = CSP("binary_grid_csp", variables_csp)
+
+    for cons in constraints:
+        csp.add_constraint(cons)
+    return csp, variables
 
 
 def nary_ad_grid(cagey_grid):
-    ## IMPLEMENT
-    pass
+    
 
 def cagey_csp_model(cagey_grid):
     ##IMPLEMENT
