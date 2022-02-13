@@ -118,10 +118,11 @@ def binary_ne_grid(cagey_grid):
     for r in range(grid_size):
         for c in range(grid_size):
             for n in range(c + 1, grid_size):
+                # adding the constraint of a pair in the same row
                 row_constraint = Constraint(name = "Cons(Var({},{}) and Var({},{}))".format(r + 1, c + 1, r + 1, n + 1), \
                     scope= [variables[r][c], variables[r][n]])
                 row_constraint.add_satisfying_tuples(sat_tuples)
-                
+                # adding the constraint of a pair in the same column
                 col_constraint = Constraint(name = "Cons(Var({},{}) and Var({},{}))".format(r + 1, c + 1, n + 1, r + 1), \
                     scope = [variables[c][r], variables[n][r]])
                 col_constraint.add_satisfying_tuples(sat_tuples)
@@ -142,7 +143,57 @@ def binary_ne_grid(cagey_grid):
 
 
 def nary_ad_grid(cagey_grid):
+    # getting the grid size
+    grid_size = cagey_grid[0]
+
+    # populating a domain list from 1 to n, this is all the values a variable square can have
+    value_domain = [ _ for _ in range(1, grid_size + 1)] # [1,2,3] ie
+
+    # initialize a variable matrix
+    variables = []
+    # variables = [[Variable("{},{}".format(r,c), domain= value_domain) for c in range(grid_size)] for r in range(grid_size)]
+    # going through all the colummns and rows to populate the var matrix
+    for r in range(1, grid_size + 1) :
+        cur_row = []
+        for c in range(1, grid_size + 1):
+            cur_var = Variable("Var({},{})".format(r,c), domain=value_domain)
+            cur_row.append(cur_var)
+        variables.append(cur_row)
+
+    # creating a Constraint matrix
+    constraints = []
     
+    for r in range(grid_size):
+        # no variable should have the same value in a row
+        row_constraint = Constraint(name = "Cons(row {})".format(r + 1),\
+            scope = [variables[r][i] for i in range(grid_size)])
+        
+        variable_col = []
+        for c in range(grid_size):
+            variable_col.append(variables[c][r])
+        # no variable should have the same value in a column
+        col_constraint = Constraint(name = "Cons(col {})".format(r + 1),\
+            scope = [variable_col[i] for i in range(grid_size)])
+
+        sat_tuples = []
+        # grid_size * (grid_size - 1) * (grid_size - 2) * .... = num of all possible permutations
+        for i in itertools.permutations(value_domain, len(value_domain)):
+            sat_tuples.append(i)
+        row_constraint.add_satisfying_tuples(sat_tuples)
+        col_constraint.add_satisfying_tuples(sat_tuples)
+        constraints.append(row_constraint)
+        constraints.append(col_constraint)
+    
+    # initializing a CSP constraint and add all cons to it
+    variables_csp = []
+    for i in range(grid_size):
+        for j in range(grid_size):
+            variables_csp.append(variables[i][j])
+    csp = CSP("nary_grid_csp", variables_csp)
+    for cons in constraints:
+        csp.add_constraint(cons)
+    
+    return csp, variables
 
 def cagey_csp_model(cagey_grid):
     ##IMPLEMENT
